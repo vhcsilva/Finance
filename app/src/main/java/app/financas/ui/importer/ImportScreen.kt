@@ -95,7 +95,7 @@ fun ImportScreen(onBack: () -> Unit, navigate: (String) -> Unit) {
 
     Column(Modifier.fillMaxSize()) {
         ScreenHeader(
-            title = if (step == ImportStep.REVIEW) "Revisar importação" else "Importar OFX",
+            title = if (step == ImportStep.REVIEW) "Revisar importação" else "Importar extrato",
             subtitle = if (step == ImportStep.REVIEW) ui.destinationName + (ui.form.invoice?.takeIf { ui.isCardDestination }
                 ?.let { " · fatura ${Dates.monthShortYear(it)}" } ?: "") else null,
             onBack = { if (step == ImportStep.DESTINATION || step == ImportStep.REVIEW) vm.back() else onBack() },
@@ -180,7 +180,7 @@ private fun PickStep(ui: ImportUi, vm: ImportViewModel) {
                 Icon(Icons.Outlined.Description, null, tint = Palette.Accent, modifier = Modifier.size(32.dp))
                 Text("Importe o extrato ou a fatura", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "Baixe o arquivo .ofx no app ou site do seu banco. O importador identifica se é conta ou cartão, " +
+                    "Baixe o arquivo .ofx ou .csv no app ou site do seu banco. O importador identifica se é conta ou cartão, " +
                         "sugere categorias com base no seu histórico, reconhece parcelas e evita duplicadas. " +
                         "Nada é salvo antes da sua revisão.",
                     style = MaterialTheme.typography.bodyMedium,
@@ -192,7 +192,7 @@ private fun PickStep(ui: ImportUi, vm: ImportViewModel) {
                         Text("Lendo arquivo…")
                     }
                 } else {
-                    PrimaryButton("Escolher arquivo OFX", { launcher.launch(arrayOf("*/*")) }, Modifier.fillMaxWidth())
+                    PrimaryButton("Escolher arquivo OFX ou CSV", { launcher.launch(arrayOf("*/*")) }, Modifier.fillMaxWidth())
                 }
                 ui.form.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
             }
@@ -238,7 +238,7 @@ private fun DestinationStep(ui: ImportUi, vm: ImportViewModel) {
                         contentAlignment = Alignment.Center,
                     ) { Icon(Icons.Outlined.Description, null, tint = Palette.Accent) }
                     Column(Modifier.weight(1f)) {
-                        Text(f.fileName ?: "arquivo.ofx", style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(f.fileName ?: "arquivo", style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         Text("Lido com sucesso", style = MaterialTheme.typography.bodySmall)
                     }
                     SecondaryButton("Trocar", vm::restart)

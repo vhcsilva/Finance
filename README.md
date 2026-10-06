@@ -9,7 +9,7 @@ App nativo em **Kotlin + Jetpack Compose (Material 3)**, com armazenamento local
 3. Conecte um celular com Android 8.0+ (ou use um emulador) e clique em **Run ▶**.
 
 Para gerar um APK instalável: `./gradlew assembleRelease` → `app/build/outputs/apk/release/app-release.apk`
-(o release está assinado com a chave de debug só para facilitar a instalação manual; troque antes de publicar).
+(assinado com a chave fixa `app/financas.keystore`, então cada APK novo atualiza o anterior sem perder dados).
 
 Testes da lógica de negócio: `./gradlew testDebugUnitTest`
 
@@ -44,9 +44,12 @@ O log da compilação fica no branch `build-output`.
 - **Categorias** marcadas como “ignorar nos relatórios” ficam fora dos totais. Já vêm marcadas: *Pagamento de fatura* e *Entre minhas contas*.
 - **Recorrentes** têm uma data-âncora e uma frequência (semanal, mensal, anual). As próximas aparecem no Início e podem ser lançadas com um toque.
 
-## Importador de OFX
+## Importador de OFX e CSV
 
-- Lê OFX 1.x (SGML) e 2.x (XML). Detecta o encoding (UTF-8 ou Windows-1252, padrão dos bancos brasileiros).
+- Lê OFX 1.x (SGML) e 2.x (XML), e CSV com cabeçalho (ex.: `Data;Estabelecimento;Portador;Valor;Parcela`), separado por `;`, `,` ou tab.
+- No CSV de fatura, as compras vêm positivas e o pagamento negativo. O app inverte os sinais e usa a coluna *Parcela* (“2 de 3”) para reconhecer parcelas.
+- Como o CSV não tem FITID, cada linha recebe um identificador estável. Assim, reimportar o mesmo arquivo não duplica nada.
+- Lê OFX Detecta o encoding (UTF-8 ou Windows-1252, padrão dos bancos brasileiros).
 - Identifica se o arquivo é de **conta** ou de **cartão** e sugere o destino. Na próxima importação, lembra qual conta/cartão corresponde a cada arquivo.
 - Para cartão, infere a **fatura** pela compra mais recente. Você pode ajustar antes de revisar.
 - **Duplicadas**:

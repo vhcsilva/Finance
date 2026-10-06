@@ -82,7 +82,7 @@ fun TransactionsScreen(navigate: (String) -> Unit) {
                             horizontalArrangement = Arrangement.spacedBy(6.dp),
                         ) {
                             Icon(Icons.Outlined.FileUpload, null, Modifier.size(18.dp))
-                            Text("OFX", style = MaterialTheme.typography.labelMedium)
+                            Text("Importar", style = MaterialTheme.typography.labelMedium)
                         }
                     }
                     RoundIconButton(onClick = {

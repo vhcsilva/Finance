@@ -64,9 +64,9 @@ data class Snapshot(
 
     val totalBalance: Long get() = accounts.sumOf { accountBalance(it.id) }
 
-    /** Data "de referência" da parcela: a data da compra avançada um mês por parcela. */
+    /** Data "de referência" da parcela: a data original da compra avançada um mês por parcela. */
     fun installmentDate(p: CardPurchaseEntity, number: Int): LocalDate =
-        p.date.plusMonths((number - p.firstInstallment).toLong())
+        p.date.plusMonths((number - 1).toLong())
 
     /** Divide o valor de uma parcela entre as pessoas da compra (ou tudo para "Eu"). */
     fun sharesFor(purchaseId: Long, amount: Long): Map<Long, Long> {

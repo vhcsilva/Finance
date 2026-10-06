@@ -240,7 +240,7 @@ private fun Onboarding(navigate: (String) -> Unit) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text("Comece por aqui", style = MaterialTheme.typography.titleMedium)
             Text(
-                "Cadastre suas contas e cartões. Depois é só lançar os gastos ou importar o extrato em OFX.",
+                "Cadastre suas contas e cartões. Depois é só lançar os gastos ou importar o extrato em OFX ou CSV.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Palette.InkSoft,
             )

@@ -13,7 +13,7 @@ import app.financas.domain.ofx.ExistingRecord
 import app.financas.domain.ofx.ImportCandidate
 import app.financas.domain.ofx.ImportHeuristics
 import app.financas.domain.ofx.ImportPlanner
-import app.financas.domain.ofx.OfxParser
+import app.financas.domain.ofx.StatementReader
 import app.financas.domain.ofx.OfxStatement
 import app.financas.domain.ofx.PlanContext
 import app.financas.domain.ofx.PlanOptions
@@ -77,11 +77,11 @@ class ImportViewModel(private val repository: FinanceRepository) : ViewModel() {
         }
         form.update { it.copy(busy = true, error = null) }
         viewModelScope.launch {
-            val result = withContext(Dispatchers.Default) { runCatching { OfxParser.parse(bytes) } }
+            val result = withContext(Dispatchers.Default) { runCatching { StatementReader.read(bytes) } }
             val statement = result.getOrNull()
             if (statement == null) {
                 form.update {
-                    it.copy(busy = false, error = result.exceptionOrNull()?.message ?: "Arquivo OFX inválido.")
+                    it.copy(busy = false, error = result.exceptionOrNull()?.message ?: "Arquivo inválido.")
                 }
                 return@launch
             }

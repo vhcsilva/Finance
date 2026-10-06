@@ -71,8 +71,8 @@ object ImportHeuristics {
     /** Pagamento da fatura lançado como crédito dentro do próprio OFX do cartão. */
     fun isCardPayment(text: String): Boolean {
         val n = normalize(text)
-        return (n.contains("PAGAMENTO") && (n.contains("RECEBIDO") || n.contains("EFETUADO") || n.contains("FATURA"))) ||
-            n.startsWith("PGTO") || n.contains("PAGTO") || n.contains("PAG FATURA")
+        if (n.contains("ESTORNO")) return false
+        return n.contains("PAGAMENTO") || n.startsWith("PGTO") || n.contains("PAGTO") || n.contains("PAG FATURA")
     }
 
     /** Pagamento de fatura de cartão saindo da conta corrente. */

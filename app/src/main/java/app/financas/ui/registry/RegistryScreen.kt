@@ -141,7 +141,7 @@ fun RegistryScreen(navigate: (String) -> Unit) {
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            HubRow(Icons.Outlined.FileUpload, Palette.LineSoft, Palette.InkSoft, "Importar OFX", "Extratos de conta e fatura") { navigate(Routes.IMPORT) }
+            HubRow(Icons.Outlined.FileUpload, Palette.LineSoft, Palette.InkSoft, "Importar OFX ou CSV", "Extratos de conta e fatura") { navigate(Routes.IMPORT) }
             RowDivider()
             HubRow(Icons.Outlined.FileDownload, Palette.LineSoft, Palette.InkSoft, "Exportar backup", "Salva todos os dados em um arquivo") {
                 exportLauncher.launch("financas-backup-${LocalDate.now()}.json")

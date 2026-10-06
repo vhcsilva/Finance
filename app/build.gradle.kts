@@ -15,8 +15,19 @@ android {
         applicationId = "app.financas"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        // No GitHub Actions o número do build garante que cada APK novo atualize o anterior.
+        versionCode = (System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 0) + 10
+        versionName = "1.1.0"
+    }
+
+    signingConfigs {
+        // Chave fixa: todas as versões são assinadas igual, então o APK novo atualiza o instalado.
+        create("release") {
+            storeFile = file("financas.keystore")
+            storePassword = "financas123"
+            keyAlias = "financas"
+            keyPassword = "financas123"
+        }
     }
 
     buildTypes {
@@ -27,9 +38,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Assina com a chave de debug para facilitar a instalação manual (sideload).
-            // Troque por uma chave própria antes de publicar na Play Store.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 

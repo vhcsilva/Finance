@@ -42,6 +42,7 @@ import app.financas.ui.registry.CategoriesScreen
 import app.financas.ui.registry.PeopleScreen
 import app.financas.ui.registry.RecurringScreen
 import app.financas.ui.registry.RegistryScreen
+import app.financas.ui.reports.AnnualScreen
 import app.financas.ui.reports.ReportsScreen
 import app.financas.ui.theme.Palette
 import app.financas.ui.transactions.TransactionsScreen
@@ -57,6 +58,7 @@ object Routes {
     const val CATEGORIES = "categories"
     const val PEOPLE = "people"
     const val IMPORT = "import"
+    const val ANNUAL = "annual"
     const val EDIT = "edit?mode={mode}&id={id}&recurringId={recurringId}"
 
     const val MODE_ACCOUNT = "account"
@@ -120,7 +122,8 @@ fun FinancasNavHost() {
             ) {
                 composable(Routes.HOME) { HomeScreen(navigate = go) }
                 composable(Routes.TRANSACTIONS) { TransactionsScreen(navigate = go) }
-                composable(Routes.REPORTS) { ReportsScreen() }
+                composable(Routes.REPORTS) { ReportsScreen(onOpenAnnual = { go(Routes.ANNUAL) }) }
+                composable(Routes.ANNUAL) { AnnualScreen(onBack = back) }
                 composable(Routes.REGISTRY) { RegistryScreen(navigate = go) }
                 composable(Routes.ACCOUNTS) { AccountsScreen(onBack = back) }
                 composable(Routes.CARDS) { CardsScreen(onBack = back) }

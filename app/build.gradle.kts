@@ -17,7 +17,7 @@ android {
         targetSdk = 36
         // No GitHub Actions o número do build garante que cada APK novo atualize o anterior.
         versionCode = (System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 0) + 10
-        versionName = "1.1.0"
+        versionName = "1.2.0"
     }
 
     signingConfigs {

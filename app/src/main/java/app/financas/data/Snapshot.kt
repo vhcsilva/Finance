@@ -1,6 +1,8 @@
 package app.financas.data
 
+import app.financas.domain.Described
 import app.financas.domain.Entry
+import app.financas.domain.RecurringDef
 import app.financas.domain.Money
 import app.financas.domain.TxType
 import app.financas.domain.ofx.HistoryItem
@@ -83,25 +85,37 @@ data class Snapshot(
             if (p?.type == TxType.IN) -inst.amount else inst.amount
         }
 
-    /** Lançamentos normalizados para relatórios (sem categorias marcadas como "ignorar"). */
-    val entries: List<Entry> by lazy {
+    /** Lançamentos para relatórios (sem categorias marcadas como "ignorar"), com a descrição normalizada. */
+    val described: List<Described> by lazy {
         val fromAccounts = transactions.filterNot { isIgnored(it.categoryId) }.map {
-            Entry(it.date, YearMonth.from(it.date), it.amount, it.type, it.categoryId, accountId = it.accountId)
+            Described(
+                Entry(it.date, YearMonth.from(it.date), it.amount, it.type, it.categoryId, accountId = it.accountId),
+                ImportHeuristics.normalize(it.description),
+            )
         }
         val fromCards = installments.mapNotNull { inst ->
             val p = purchaseById[inst.purchaseId] ?: return@mapNotNull null
             if (isIgnored(p.categoryId)) return@mapNotNull null
-            Entry(
-                date = installmentDate(p, inst.number),
-                period = inst.invoice,
-                amount = inst.amount,
-                type = p.type,
-                categoryId = p.categoryId,
-                cardId = inst.cardId,
-                shares = sharesFor(p.id, inst.amount),
+            Described(
+                Entry(
+                    date = installmentDate(p, inst.number),
+                    period = inst.invoice,
+                    amount = inst.amount,
+                    type = p.type,
+                    categoryId = p.categoryId,
+                    cardId = inst.cardId,
+                    shares = sharesFor(p.id, inst.amount),
+                ),
+                ImportHeuristics.normalize(p.description),
             )
         }
         fromAccounts + fromCards
+    }
+
+    val entries: List<Entry> by lazy { described.map { it.entry } }
+
+    val recurringDefs: List<RecurringDef> by lazy {
+        recurring.map { RecurringDef(it.id, it.name, ImportHeuristics.normalize(it.name), it.amount, it.frequency, it.anchorDate) }
     }
 
     val ledger: List<LedgerItem> by lazy {

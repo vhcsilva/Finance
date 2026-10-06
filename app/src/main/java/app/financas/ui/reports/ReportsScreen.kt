@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -54,7 +56,7 @@ import app.financas.ui.theme.NumberStyle
 import app.financas.ui.theme.Palette
 
 @Composable
-fun ReportsScreen() {
+fun ReportsScreen(onOpenAnnual: () -> Unit = {}) {
     val vm: ReportsViewModel = viewModel(factory = appViewModelFactory { repo, _ -> ReportsViewModel(repo) })
     val state by vm.state.collectAsStateWithLifecycle()
     val s = state ?: return
@@ -64,6 +66,40 @@ fun ReportsScreen() {
         item {
             ScreenHeader("Relatórios") {
                 MonthSwitcher(s.periodLabel, onPrevious = { vm.shiftPeriod(-1) }, onNext = { vm.shiftPeriod(1) })
+            }
+        }
+        item {
+            Panel(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                onClick = onOpenAnnual,
+            ) {
+                Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Palette.Deep),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        androidx.compose.material3.Icon(
+                            androidx.compose.material.icons.Icons.Outlined.CalendarMonth, null, tint = Color.White,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .padding(start = 12.dp)
+                    ) {
+                        Text("Resumo anual mês a mês", style = MaterialTheme.typography.titleSmall)
+                        Text("Entradas, cartões por pessoa, recorrentes e líquido", style = MaterialTheme.typography.bodySmall)
+                    }
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Outlined.ChevronRight, null, tint = Palette.Muted,
+                    )
+                }
             }
         }
         item {

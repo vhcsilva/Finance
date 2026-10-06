@@ -1,0 +1,59 @@
+name: Gerar APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar APK e rodar testes
+        id: build
+        continue-on-error: true
+        run: |
+          chmod +x gradlew
+          set -o pipefail
+          ./gradlew assembleRelease testDebugUnitTest --stacktrace 2>&1 | tee build.log
+
+      - name: Publicar APK em Releases (link direto para baixar no celular)
+        if: steps.build.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/release/app-release.apk financas.apk
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest financas.apk \
+            --title "Finanças — último build" \
+            --notes "Gerado automaticamente a partir de ${{ github.sha }}. Baixe o financas.apk e abra no celular."
+
+      - name: Guardar APK e log no branch build-output
+        if: always()
+        run: |
+          mkdir -p out
+          cp build.log out/ 2>/dev/null || true
+          cp app/build/outputs/apk/release/app-release.apk out/financas.apk 2>/dev/null || true
+          echo "${{ steps.build.outcome }}" > out/STATUS
+          cd out
+          git init -q
+          git checkout -q -b build-output
+          git add .
+          git -c user.name=ci -c user.email=ci@localhost commit -qm "build ${{ github.sha }}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" build-output
+
+      - name: Falhar se a compilação falhou
+        if: steps.build.outcome != 'success'
+        run: exit 1
